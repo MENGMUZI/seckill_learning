@@ -13,7 +13,7 @@ public interface SeckillDao {
      * @param killTime
      * @return 更新的记录行数，如果返回值<1则表示更新失败
      */
-    public int reduceNumber(Long seckillId, Date killTime);
+    public int reduceNumber(@Param("seckillId") Long seckillId, @Param("killTime") Date killTime);
 
     /**
      * 根据id查询秒杀商品
@@ -21,7 +21,7 @@ public interface SeckillDao {
      * @param seckillId
      * @return
      */
-    Seckill queryById(long seckillId);
+    public Seckill queryById(long seckillId);
 
     /**
      * 根据偏移量查询秒杀商品列表
@@ -30,7 +30,7 @@ public interface SeckillDao {
      * @param limit
      * @return
      */
-    List<Seckill> queryAll(@Param("offset") int offset, @Param("limit") int limit);
+    public List<Seckill> queryAll(@Param("offset") int offset, @Param("limit") int limit);
 
 
 
