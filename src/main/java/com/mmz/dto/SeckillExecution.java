@@ -1,6 +1,7 @@
 package com.mmz.dto;
 
 import com.mmz.entity.SuccessKilled;
+import com.mmz.enums.SeckillStatEnum;
 
 /**
  * @author : mengmuzi
@@ -21,18 +22,18 @@ public class SeckillExecution {
     private SuccessKilled successKilled;
 
     //秒杀成功返回所有信息
-    public SeckillExecution(long seckillId, int state, String stateInfo, SuccessKilled successKilled) {
+    public SeckillExecution(long seckillId, SeckillStatEnum seckillStatEnum, SuccessKilled successKilled) {
         this.seckillId = seckillId;
-        this.state = state;
-        this.stateInfo = stateInfo;
+        this.state = seckillStatEnum.getState();
+        this.stateInfo = seckillStatEnum.getInfo();
         this.successKilled = successKilled;
     }
 
     //秒杀失败
-    public SeckillExecution(long seckillId, int state, String stateInfo) {
+    public SeckillExecution(long seckillId, SeckillStatEnum seckillStatEnum) {
         this.seckillId = seckillId;
-        this.state = state;
-        this.stateInfo = stateInfo;
+        this.state = seckillStatEnum.getState();
+        this.stateInfo = seckillStatEnum.getInfo();
     }
 
     public long getSeckillId() {
