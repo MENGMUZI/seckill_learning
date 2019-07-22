@@ -153,6 +153,16 @@
 
   <build>
     <finalName>seckill</finalName>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/java</directory>
+        <excludes>
+          <exclude>**/*.xml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <!--解决idea的src目录下资源文件无法复制到target下-->
+
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
