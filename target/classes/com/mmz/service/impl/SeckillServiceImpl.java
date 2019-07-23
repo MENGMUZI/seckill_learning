@@ -2,6 +2,7 @@ package com.mmz.service.impl;
 
 import com.mmz.dao.SeckillDao;
 import com.mmz.dao.SuccessKilledDao;
+import com.mmz.dao.cache.RedisDao;
 import com.mmz.dto.Exposer;
 import com.mmz.dto.SeckillExecution;
 import com.mmz.entity.Seckill;
@@ -36,6 +37,8 @@ public class SeckillServiceImpl implements SeckillService {
     private SeckillDao seckillDao;
     @Autowired
     private SuccessKilledDao successKilledDao;
+    @Autowired
+    private RedisDao redisDao;
 
     //加入一个混淆字符串(秒杀接口)的salt，为了我避免用户猜出我们的md5值，值任意给，越复杂越好
     private final String salt ="2342432KBKHIK5#$@#^%&*(&*()()*&^%$*";
@@ -51,11 +54,28 @@ public class SeckillServiceImpl implements SeckillService {
         return seckillDao.queryById(seckillId);
     }
 
+    /**
+     * 1.优化秒杀暴露接口 ==》 使用Redis优化地址暴露接口
+     *  原本查询秒杀商品时是通过主键直接去数据库查询的，选择将数据缓存在Redis，在查询秒杀商品时先去Redis缓存中查询，
+     *  以此降低数据库的压力。如果在缓存中查询不到数据再去数据库中查询，再将查询到的数据放入Redis缓存中，
+     *  这样下次就可以直接去缓存中直接查询到。
+     *
+     *  以上属于数据访问层的逻辑（DAO层），所以我们需要在dao包下新建一个cache目录，在该目录下新建RedisDao.java，用来存取缓存。
+     */
     @Override
     public Exposer exportSeckillUrl(long seckillId) {
-        Seckill seckill = seckillDao.queryById(seckillId);
+        // 优化点:缓存优化:超时的基础上维护一致性
+        // 1.访问redis
+        Seckill seckill = redisDao.getSeckill(seckillId);
         if(seckill == null){
-            return new Exposer(false,seckillId);
+            //2.缓存中没有，访问数据库
+            seckill = seckillDao.queryById(seckillId);
+            if(seckill == null){
+                return new Exposer(false,seckillId);
+            }else{
+                //3.如果数据库中存在，则放入Redis缓存中
+                redisDao.putSeckill(seckill);
+            }
         }
         //若是秒杀未开启
         Date startTime = seckill.getStartTime();
