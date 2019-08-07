@@ -39,7 +39,7 @@ public class SeckillController {
      */
     @RequestMapping(value= "/list",method = RequestMethod.GET)
     public String list(Model model){
-        //list.jsp + mode = ModelAndView
+        //list.jsp + model = ModelAndView
         //获取列表页
         List<Seckill> list = seckillService.getSeckillList();
         model.addAttribute("list",list);
